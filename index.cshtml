@@ -3,18 +3,23 @@
     var db = Database.Open("NSUGradInternship");
 
     if(IsPost){
-
-        db.Execute("INSERT into user (FullName, PhoneNumber, Email, Password, Role) VALUES (@0, @1, @2, @3, 'Student');",Request["name"],Request["phonenumber"],Request["email"],Request["password"]);
-        db.Execute("INSERT into student (Major) VALUES (@0);",Request["major"]);
-        db.Execute("INSERT into agency (AgencyName, AgencyAddress, AgencyWebsite, AgencyPhoneNumber) VALUES (@0, @1, @2, @3);",Request["agencyname"],Request["agencyaddress"],Request["agencywebsite"],Request["agencyphonenumber"]);
-        db.Execute("INSERT into supervisor (SupervisorName, SupervisorPhoneNumber, SupervisorEmail, SupervisorRole) VALUES (@0, @1, @2, 'Agency');",Request["supervisorname"],Request["supervisorphonenumber"],Request["supervisoremail"]);
-        db.Execute("INSERT into internship (InternshipStatus, JobDescription, OfferLetterLink) VALUES ('pending', @0, 'test');",Request["jobdescription"]);
-        db.Execute("UPDATE student s, user u SET s.UserID = u.UserID WHERE FullName = @0;",Request["name"]);
-        db.Execute("UPDATE student s, internship i SET s.InternshipID = i.InternshipID WHERE JobDescription=@0;",Request["jobdescription"]);
-        db.Execute("UPDATE supervisor s, agency a SET s.AgencyID = a.AgencyID WHERE AgencyName=@0;",Request["agencyname"]);
-        db.Execute("UPDATE internship i, student s SET i.StuID = s.StuID WHERE JobDescription=@0;",Request["jobdescription"]);
-        db.Execute("UPDATE internship i, agency a SET i.AgencyID = a.AgencyID WHERE AgencyName=@0;",Request["agencyname"]);
-        db.Execute("UPDATE internship i, supervisor s SET i.AgencySupervisorID = s.SupervisorID WHERE SupervisorName=@0;",Request["supervisorname"]);
+        try{
+            db.Execute("set autocommit = 0");
+            db.Execute("INSERT into user (FullName, PhoneNumber, Email, Password, Role) VALUES (@0, @1, @2, @3, 'Student');",Request["name"],Request["phonenumber"],Request["email"],Request["password"]);
+            db.Execute("INSERT into student (Major) VALUES (@0);",Request["major"]);
+            db.Execute("INSERT into agency (AgencyName, AgencyAddress, AgencyWebsite, AgencyPhoneNumber) VALUES (@0, @1, @2, @3);",Request["agencyname"],Request["agencyaddress"],Request["agencywebsite"],Request["agencyphonenumber"]);
+            db.Execute("INSERT into supervisor (SupervisorName, SupervisorPhoneNumber, SupervisorEmail, SupervisorRole) VALUES (@0, @1, @2, 'Agency');",Request["supervisorname"],Request["supervisorphonenumber"],Request["supervisoremail"]);
+            db.Execute("INSERT into internship (InternshipStatus, JobDescription, OfferLetterLink) VALUES ('pending', @0, 'test');",Request["jobdescription"]);
+            db.Execute("UPDATE student s, user u SET s.UserID = u.UserID WHERE FullName = @0;",Request["name"]);
+            db.Execute("UPDATE student s, internship i SET s.InternshipID = i.InternshipID WHERE JobDescription=@0;",Request["jobdescription"]);
+            db.Execute("UPDATE supervisor s, agency a SET s.AgencyID = a.AgencyID WHERE AgencyName=@0;",Request["agencyname"]);
+            db.Execute("UPDATE internship i, student s SET i.StuID = s.StuID WHERE JobDescription=@0;",Request["jobdescription"]);
+            db.Execute("UPDATE internship i, agency a SET i.AgencyID = a.AgencyID WHERE AgencyName=@0;",Request["agencyname"]);
+            db.Execute("UPDATE internship i, supervisor s SET i.AgencySupervisorID = s.SupervisorID WHERE SupervisorName=@0;",Request["supervisorname"]);
+            db.Execute("commit");
+        } catch (Exception ex){
+            db.Execute("rollback");
+        }
    }    
 }
 
