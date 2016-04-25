@@ -1,26 +1,5 @@
 ﻿@{
     
-    var db = Database.Open("Database");
-
-    if(IsPost){
-        try{
-            db.Execute("set autocommit = 0");
-            db.Execute("INSERT into user (FullName, PhoneNumber, Email, Password, Role) VALUES (@0, @1, @2, @3, 'Student');",Request["name"],Request["phonenumber"],Request["email"],Request["password"]);
-            db.Execute("INSERT into student (Major) VALUES (@0);",Request["major"]);
-            db.Execute("INSERT into agency (AgencyName, AgencyAddress, AgencyWebsite, AgencyPhoneNumber) VALUES (@0, @1, @2, @3);",Request["agencyname"],Request["agencyaddress"],Request["agencywebsite"],Request["agencyphonenumber"]);
-            db.Execute("INSERT into supervisor (SupervisorName, SupervisorPhoneNumber, SupervisorEmail, SupervisorRole) VALUES (@0, @1, @2, 'Agency');",Request["supervisorname"],Request["supervisorphonenumber"],Request["supervisoremail"]);
-            db.Execute("INSERT into internship (InternshipStatus, JobDescription, OfferLetterLink) VALUES ('pending', @0, 'test');",Request["jobdescription"]);
-            db.Execute("UPDATE student s, user u SET s.UserID = u.UserID WHERE FullName = @0;",Request["name"]);
-            db.Execute("UPDATE student s, internship i SET s.InternshipID = i.InternshipID WHERE JobDescription=@0;",Request["jobdescription"]);
-            db.Execute("UPDATE supervisor s, agency a SET s.AgencyID = a.AgencyID WHERE AgencyName=@0;",Request["agencyname"]);
-            db.Execute("UPDATE internship i, student s SET i.StuID = s.StuID WHERE JobDescription=@0;",Request["jobdescription"]);
-            db.Execute("UPDATE internship i, agency a SET i.AgencyID = a.AgencyID WHERE AgencyName=@0;",Request["agencyname"]);
-            db.Execute("UPDATE internship i, supervisor s SET i.AgencySupervisorID = s.SupervisorID WHERE SupervisorName=@0;",Request["supervisorname"]);
-            db.Execute("commit");
-        } catch (Exception ex){
-            db.Execute("rollback");
-        }
-   }    
 }
 
 <!DOCTYPE html>
@@ -28,110 +7,30 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Hello World</title>
+        <title>NSU Internship Portal</title>
     </head>
     <body>
-        <form id="form_1125059" class="appnitro" enctype="multipart/form-data" method="post" action="">
-					<div class="form_description">
-			<h2>Untitled Form</h2>
-			<p>This is your form description. Click here to edit.</p>
-		</div>						
-			<ul >
-			
-					<li id="li_1" >
-		<label class="description" for="element_1">Name </label>
-		<div>
-			<input id="element_1" name="name" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_2" >
-		<label class="description" for="element_2">NSU ID </label>
-		<div>
-			<input id="element_2" name="nsuid" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_13" >
-		<label class="description" for="element_13">Email </label>
-		<div>
-			<input id="element_13" name="email" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li><li id="li_18" >
-		<label class="description" for="element_18">Password </label>
-		<div>
-			<input id="element_18" name="password" class="element text medium" type="password" maxlength="30" value=""/> 
-		</div> 
-		</li>		<li id="li_3" >
-		<label class="description" for="element_3">Phone Number </label>
-		<div>
-			<input id="element_3" name="phonenumber" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_15" >
-		<label class="description" for="element_15">Term for Internship </label>
-		<span>
-			<input id="element_15_1" name="term" class="element radio" type="radio" value="winter" />
-<label class="choice" for="element_15_1">Winter</label>
-<input id="element_15_2" name="term" class="element radio" type="radio" value="summer" />
-<label class="choice" for="element_15_2">Summer</label>
-<input id="element_15_3" name="term" class="element radio" type="radio" value="fall" />
-<label class="choice" for="element_15_3">Fall</label>
-
-		</span> 
-		</li>		<li id="li_4" >
-		<label class="description" for="element_4">Your Major </label>
-		<div>
-			<input id="element_4" name="major" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_5" >
-		<label class="description" for="element_5">Name of Agency for Internship </label>
-		<div>
-			<input id="element_5" name="agencyname" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_6" >
-		<label class="description" for="element_6">Agency Address </label>
-		<div>
-			<input id="element_6" name="agencyaddress" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_7" >
-		<label class="description" for="element_7">Agency Phone Number </label>
-		<div>
-			<input id="element_7" name="agencyphonenumber" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_8" >
-		<label class="description" for="element_8">Agency Website </label>
-		<div>
-			<input id="element_8" name="agencywebsite" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_9" >
-		<label class="description" for="element_9">Name of Supervisor </label>
-		<div>
-			<input id="element_9" name="supervisorname" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_10" >
-		<label class="description" for="element_10">Supervisor's Phone Number </label>
-		<div>
-			<input id="element_10" name="supervisorphonenumber" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_11" >
-		<label class="description" for="element_11">Supervisor's email </label>
-		<div>
-			<input id="element_11" name="supervisoremail" class="element text medium" type="text" maxlength="255" value=""/> 
-		</div> 
-		</li>		<li id="li_14" >
-		<label class="description" for="element_14">Offer Letter Upload (PDF or Scanned Image ONLY) </label>
-		<div>
-			<input id="element_14" name="offerletterlink" class="element file" type="file"/> 
-		</div>  
-		</li>		<li id="li_12" >
-		<label class="description" for="element_12">Job Description </label>
-		<div>
-			<textarea id="element_12" name="jobdescription" class="element textarea medium"></textarea> 
-		</div> 
-		</li>
-			
-					<li class="buttons">
-			    <input type="hidden" name="form_id" value="1125059" />
-			    
-				<input id="saveForm" class="button_text" type="submit" name="submit" value="Submit" />
-		</li>
-			</ul>
-		</form>	
+        @if(WebSecurity.IsAuthenticated)
+            {
+                <p>Welcome, @WebSecurity.CurrentUserName</p>
+                <p><a href="@Href("~/logout")">Log out</a></p>
+            }
+         else
+            {
+                <ul>			
+	                <li>
+		                <label for="username">Username</label>
+                        <input type="text" name="username" id="username" value="" />
+		            </li>		
+                    <li>
+		                <label for="password">Password</label>
+                        <input type="password" name="password" id="password" value="" />
+                    </li>
+                    <li>
+                        <input type="submit" value="Log In" />
+                    </li>
+                </ul>
+                <a href="@Href("~/Register")">Not Registered? Click here!</a>
+            }
     </body>
 </html>
