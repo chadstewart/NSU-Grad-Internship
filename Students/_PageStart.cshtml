@@ -6,7 +6,6 @@
     } else if (!Roles.IsUserInRole(WebSecurity.CurrentUserName, 
       "Student"))
     {
-      Response.SetStatus(HttpStatusCode.Forbidden);
       Response.Redirect("~/Home");
     }
 }

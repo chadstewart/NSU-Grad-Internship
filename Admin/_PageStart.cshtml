@@ -3,10 +3,9 @@
 
     if(!WebSecurity.IsAuthenticated) {
         Response.Redirect("~/index");
-    } else if (!Roles.IsUserInRole(WebSecurity.CurrentUserName, 
-      "Admin"))
+    } else if (!Roles.IsUserInRole(WebSecurity.CurrentUserName,"Admin")
+            || !Roles.IsUserInRole(WebSecurity.CurrentUserName,"Dean"))
     {
-      Response.SetStatus(HttpStatusCode.Forbidden);
       Response.Redirect("~/Home");
     }
 }

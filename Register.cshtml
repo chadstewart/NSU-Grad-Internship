@@ -1,8 +1,9 @@
 ﻿@{
-  var username = "";
+  var email = "";
   var password = "";
   var confirmPassword = "";
   var errorMessage = "";
+  var db = Database.Open("Login");
   
   if(!IsPost) {
       if(WebSecurity.IsAuthenticated) {
@@ -12,7 +13,7 @@
     
   if(IsPost) {
       WebSecurity.Logout();
-      username = Request["username"];
+      email = Request["email"];
       password = Request["password"];
       confirmPassword = Request["confirmPassword"];
       if(password != confirmPassword) {
@@ -20,13 +21,15 @@
           }
 
       else {
-          if(WebSecurity.UserExists(username)) {
-              errorMessage = String.Format("User '{0}' already exists.", username);
+          if(WebSecurity.UserExists(email)) {
+              errorMessage = String.Format("User '{0}' already exists.", email);
            }
           else {
-              WebSecurity.CreateUserAndAccount(username, password, null, false);
-              WebSecurity.Login(username, password, true);
-              errorMessage = String.Format("{0} created.", username);
+              WebSecurity.CreateUserAndAccount(email, password, null, false);
+              WebSecurity.Login(email, password, true);
+              errorMessage = String.Format("{0} created.", email);
+              db.Execute("UPDATE users SET FullName = @0 WHERE Email = @1;",Request["name"],email);
+              db.Close();
             }
         }
     }
@@ -44,7 +47,7 @@
         <form method="post">
             <p>
                 <label for="name">Name:</label>
-                <input type="text" name="name" id="name" value="@Request["name"]" />
+                <input type="text" name="name" id="name" value="" />
             </p>
             <p>
                 <label for="nsuid">NSU ID:</label>
@@ -64,7 +67,7 @@
             </p>
             <p>
                 <label for="username">Email:</label>
-                <input type="email" name="username" id="username" value="@Request["email"]" />
+                <input type="email" name="email" id="username" value="@Request["email"]" />
             </p>
             <p>
                 <label for="phone">Term:</label>

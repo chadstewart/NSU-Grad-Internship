@@ -1,0 +1,77 @@
+﻿@{
+  var email = "";
+  var password = "";
+  var confirmPassword = "";
+  var errorMessage = "";
+  var db = Database.Open("Login");
+  
+  if(!IsPost) {
+      if(WebSecurity.IsAuthenticated) {
+          errorMessage = String.Format("You are already logged in. (User name: {0})", WebSecurity.CurrentUserName);
+          }
+    }
+    
+  if(IsPost) {
+      WebSecurity.Logout();
+      email = Request["email"];
+      password = Request["password"];
+      confirmPassword = Request["confirmPassword"];
+      if(password != confirmPassword) {
+          errorMessage = "Passwords don't match.";
+          }
+
+      else {
+          if(WebSecurity.UserExists(email)) {
+              errorMessage = String.Format("User '{0}' already exists.", email);
+           }
+          else {
+              WebSecurity.CreateUserAndAccount(email, password, null, false);
+              WebSecurity.Login(email, password, true);
+              errorMessage = String.Format("{0} created.", email);
+              db.Execute("UPDATE users SET FullName = @0 WHERE Email = @1;",Request["name"],email);
+              if(Request["phone"] != null){
+                  db.Execute("UPDATE users SET PhoneNumber = @0 WHERE Email = @1;",Request["phone"],email);
+              }
+              db.Close();
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Register a New User</title>
+    </head>
+    <body>
+        <h1>Register</h1>
+        <form method="post">
+            <p>
+                <label for="name">Name:</label>
+                <input type="text" name="name" id="name" value="" />
+            </p>
+            <p>
+                <label for="username">Email:</label>
+                <input type="email" name="email" id="username" value="@Request["email"]" />
+            </p>
+            <p>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" value="" />
+            </p>
+            <p>
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" name="confirmPassword" id="confirmPassword" value="" />
+            </p>
+            <p>
+                <label for="phone">Phone Number:</label>
+                <input type="tel" name="phone" id="phone" value="@Request["phone"]" />
+            </p>
+            <p>
+                 <input type="submit" value="Submit" />
+            </p>
+        </form>
+        <a href="@Href("~/index")">Back to home</a>
+    </body>
+</html>
