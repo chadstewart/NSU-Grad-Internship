@@ -1,0 +1,24 @@
+﻿@{
+    Response.CacheControl = "no-cache";
+    
+    if (!WebSecurity.IsAuthenticated) {
+        Response.Redirect("~/index");
+    } else if (!Roles.IsUserInRole(WebSecurity.CurrentUserName, 
+      "Student"))
+    {
+      Response.SetStatus(HttpStatusCode.Forbidden);
+      Response.Redirect("~/Home");
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+    </head>
+    <body>
+        
+    </body>
+</html>
