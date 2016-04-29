@@ -26,6 +26,7 @@
           else {
               WebSecurity.CreateUserAndAccount(username, password, null, false);
               WebSecurity.Login(username, password, true);
+              Roles.AddUserToRole(username, "Student");
               errorMessage = String.Format("{0} created.", username);
             }
         }
@@ -47,9 +48,13 @@
                 <input type="text" name="name" id="name" value="@Request["name"]" />
             </p>
             <p>
+                <label for="username">Email:</label>
+                <input type="email" name="username" id="username" value="@Request["email"]" />
+            </p>
+            @*<p>
                 <label for="nsuid">NSU ID:</label>
                 <input type="number" name="nsuid" id="nsuid" value="@Request["nsuid"]" />
-            </p>
+            </p>*@
             <p>
                 <label for="password">Password:</label>
                 <input type="password" name="password" id="password" value="" />
@@ -58,7 +63,7 @@
                 <label for="confirmPassword">Confirm Password:</label>
                 <input type="password" name="confirmPassword" id="confirmPassword" value="" />
             </p>
-            <p>
+            @*<p>
                 <label for="phone">Phone Number:</label>
                 <input type="tel" name="phone" id="phone" value="@Request["phone"]" />
             </p>
@@ -105,7 +110,7 @@
             <p>
                 <label for="job_desc">Job Description Upload (PDF or scanned image only):</label>
                 <input type="file" name="job_desc" id="job_desc" value="" />
-            </p>
+            </p>*@
              <p>
                  <input type="submit" value="Submit" />
             </p>

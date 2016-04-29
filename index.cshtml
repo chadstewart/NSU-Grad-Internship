@@ -1,5 +1,26 @@
 ﻿@{
+    var username = "";
+    var password = "";
+    var errorMessage = "";
     
+    if(IsPost) {
+        username = Request["username"];
+        password = Request["password"];
+        if(WebSecurity.Login(username, password, true)){
+             if(Roles.IsUserInRole("Admin")) {
+                Response.Redirect("~/Admin/AdminHome");
+             }
+             else if(Roles.IsUserInRole("Student")) {
+                Response.Redirect("~/Students/StudentHome");
+             }
+             else {
+                Response.Redirect("~/index");
+             }
+        }
+        else {
+            errorMessage = "Login was not successful.";
+        }
+    }
 }
 
 <!DOCTYPE html>
@@ -12,24 +33,27 @@
     <body>
         @if(WebSecurity.IsAuthenticated)
             {
+                if(Roles.IsUserInRole("Admin")) {
+                    Response.Redirect("~/Admin/AdminHome");
+                }
+                else if(Roles.IsUserInRole("Student")) {
+                    Response.Redirect("~/Students/StudentHome");
+                }
                 <p>Welcome, @WebSecurity.CurrentUserName</p>
-                <p><a href="@Href("~/logout")">Log out</a></p>
+                <p><a href="@Href("~/Logout")">Log out</a></p>
             }
          else
             {
-                <ul>			
-	                <li>
-		                <label for="username">Username</label>
-                        <input type="text" name="username" id="username" value="" />
-		            </li>		
-                    <li>
-		                <label for="password">Password</label>
-                        <input type="password" name="password" id="password" value="" />
-                    </li>
-                    <li>
-                        <input type="submit" value="Log In" />
-                    </li>
-                </ul>
+                <form method="post">
+                    <label for="username">Email</label>
+                    <input type="text" name="username" id="username" value="" />
+
+		            <label for="password">Password</label>
+                    <input type="password" name="password" id="password" value="" />
+
+                    <input type="submit" value="Log In" />
+
+                </form>
                 <a href="@Href("~/Register")">Not Registered? Click here!</a>
             }
     </body>
