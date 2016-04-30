@@ -1,0 +1,38 @@
+﻿@{
+    var db = Database.Open("Login");
+    var query = db.Query("Select FullName, AgencyAddress, AgencyWebsite, AgencyPhoneNumber, InternshipStatus from users inner join student on users.userid = student.userid inner join internship on student.internshipid = internship.internshipid inner join agency on agency.agencyid = internship.agencyid where student.nsuid = @0",Request["nsuid"]);
+    var status = db.Execute("Select internshipstatus from internship where nsuid = @0",Request["nsuid"]);
+
+    var grid = new WebGrid(query);
+    if(IsPost){
+        if(Request["confirm"] == "confirm"){
+            db.Execute("Update internship set internshipstatus = 'approved' where nsuid = @0",Request["nsuid"]);
+            Response.Redirect("AdminHomePage");
+        } else if (Request["deny"] == "deny"){
+            db.Execute("Update internship set internshipstatus = 'denied' where nsuid = @0",Request["nsuid"]);
+            Response.Redirect("AdminHomePage");
+        }
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+    </head>
+    <body>
+        @grid.GetHtml()
+        @if(status.Equals("pending")){
+         <form method="post">
+            <input type="hidden" name="confirm" value="confirm" />
+            <input type="submit" value="Confirm">
+        </form>
+        <form method="post">
+            <input type="hidden" name="deny" value="deny" />
+            <input type="submit" value="Deny">
+        </form>   
+        }
+    </body>
+</html>

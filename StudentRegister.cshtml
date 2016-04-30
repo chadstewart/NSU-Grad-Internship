@@ -1,0 +1,153 @@
+﻿@{
+  var email = "";
+  var password = "";
+  var confirmPassword = "";
+  var errorMessage = "";
+  var db = Database.Open("Login");
+  
+  if(!IsPost) {
+      if(WebSecurity.IsAuthenticated) {
+          errorMessage = String.Format("You are already logged in. (User name: {0})", WebSecurity.CurrentUserName);
+          }
+    }
+    
+  if(IsPost) {
+      WebSecurity.Logout();
+      email = Request["email"];
+      password = Request["password"];
+      confirmPassword = Request["confirmPassword"];
+      if(password != confirmPassword) {
+          errorMessage = "Passwords don't match.";
+          }
+
+      else {
+          if(WebSecurity.UserExists(email)) {
+              errorMessage = String.Format("User '{0}' already exists.", email);
+           }
+          else {
+              db.Execute("begin transaction;");
+              try{
+                  WebSecurity.CreateUserAndAccount(email, password, null, false);
+                  WebSecurity.Login(email, password, true);
+                  errorMessage = String.Format("{0} created.", email);
+                  db.Execute("UPDATE users SET FullName = @0 WHERE Email = @1;",Request["name"],email);
+                  if(Request["phonenumber"] != null){
+                      db.Execute("UPDATE users SET PhoneNumber = @0 WHERE Email = @1;",Request["phonenumber"],email);
+                  }
+                  db.Execute("INSERT into student (Major, NSUID) VALUES (@0, @1);",Request["major"],Request["nsuid"]);
+                  db.Execute("INSERT into agency (AgencyName, AgencyAddress, AgencyWebsite, AgencyPhoneNumber) VALUES (@0, @1, @2, @3);",Request["agencyname"],Request["agencyaddress"],Request["agencywebsite"],Request["agencyphonenumber"]);
+                  db.Execute("INSERT into supervisor (SupervisorName, SupervisorPhoneNumber, SupervisorEmail, SupervisorRole) VALUES (@0, @1, @2, 'Agency');",Request["supervisorname"],Request["supervisorphonenumber"],Request["supervisoremail"]);
+                  db.Execute("INSERT into internship (InternshipStatus, JobDescription, OfferLetterLink) VALUES ('pending', @0, 'test');",Request["jobdescription"]);
+                  db.Execute("UPDATE student SET student.UserID = t2.UserID FROM users t2 WHERE t2.email = @0 AND student.NSUID = @1;",Request["email"],Request["nsuid"]);
+                  db.Execute("UPDATE student SET student.InternshipID = t2.InternshipID FROM internship t2 WHERE t2.jobdescription = @0 AND student.NSUID = @1;",Request["jobdescription"],Request["nsuid"]);
+                  db.Execute("UPDATE supervisor SET supervisor.AgencyID = t2.AgencyID FROM agency t2 WHERE t2.agencyname = @0 AND supervisor.SupervisorName = @1;",Request["agencyname"],Request["supervisorname"]);
+                  db.Execute("UPDATE internship SET internship.NSUID = t2.NSUID FROM student t2 WHERE t2.NSUID = @0 AND internship.jobdescription = @1;",Request["NSUID"],Request["jobdescription"]);
+                  db.Execute("UPDATE internship SET internship.AgencyID = t2.AgencyID FROM agency t2 WHERE t2.agencyname = @0 AND internship.jobdescription = @1;",Request["agencyname"],Request["jobdescription"]);
+                  db.Execute("UPDATE internship SET internship.AgencySupervisorID = t2.SupervisorID FROM supervisor t2 WHERE t2.supervisorname = @0 AND internship.jobdescription = @1;",Request["supervisorname"],Request["jobdescription"]);
+                  db.Execute("commit;");
+                } catch (Exception ex){
+                    db.Execute("rollback;");
+                    var deleteUser = db.Execute("Select UserID From users Where Email = @0",email);
+                    db.Execute("Delete From webpages_Membership Where UserID = @0",deleteUser);
+                    db.Execute("Delete From users Where UserID = @0",deleteUser);
+                    errorMessage = String.Format("Unable to create new user.");
+                }
+                db.Close();
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Register</title>
+    </head>
+    <body>
+        <h1>Register</h1>
+        <form method="post">
+            <p>
+                <label for="name">Name:</label>
+                <input type="text" name="name" id="name" value="" />
+            </p>
+            <p>
+                <label for="nsuid">NSU ID:</label>
+                <input type="number" name="nsuid" id="nsuid" value="" />
+            </p>
+            <p>
+                <label for="username">Email:</label>
+                <input type="email" name="email" id="username" value="" />
+            </p>
+            <p>
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" value="" />
+            </p>
+            <p>
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" name="confirmPassword" id="confirmPassword" value="" />
+            </p>
+            <p>
+                <label for="phone">Phone Number:</label>
+                <input type="tel" name="phonenumber" id="phone" value="" />
+            </p>
+            <p>
+		<label class="description" for="element_15">Term for Internship </label>
+		<span>
+			<input id="element_15_1" name="term" class="element radio" type="radio" value="winter" />
+<label class="choice" for="element_15_1">Winter</label>
+<input id="element_15_2" name="term" class="element radio" type="radio" value="summer" />
+<label class="choice" for="element_15_2">Summer</label>
+<input id="element_15_3" name="term" class="element radio" type="radio" value="fall" />
+<label class="choice" for="element_15_3">Fall</label>
+
+		</span> 
+		</p>	
+            <p>
+                <label for="major">Your Major:</label>
+                <input type="text" name="major" id="major" value="" />
+            </p>
+            <p>
+                <label for="company">Internship Company:</label>
+                <input type="text" name="agencyname" id="company" value="" />
+            </p>
+            <p>
+                <label for="company_address">Company Address:</label>
+                <input type="text" name="agencyaddress" id="company_address" value="" />
+            </p>
+            <p>
+                <label for="company_site">Company Website:</label>
+                <input type="text" name="agencywebsite" id="company_site" value="" />
+            </p>
+            <p>
+                <label for="phone">Company Phone Number:</label>
+                <input type="tel" name="agencyphonenumber" id="phone" value="" />
+            </p>
+            <p>
+                <label for="supervisor">Supervisor:</label>
+                <input type="text" name="supervisorname" id="supervisor" value="" />
+            </p>
+            <p>
+                <label for="supervisor_phone">Supervisor Phone Number:</label>
+                <input type="tel" name="supervisorphonenumber" id="supervisor_phone" value="" />
+            </p>
+            <p>
+                <label for="supervisor_email">Supervisor Email:</label>
+                <input type="email" name="supervisoremail" id="supervisor_email" value="" />
+            </p>
+            <p>
+                <label for="offer_letter">Offer Letter Upload (PDF or scanned image only):</label>
+                <input type="file" name="offerletter" id="offer_letter" value="" />
+            </p>
+            <p>
+                <label class="description" for="element_12">Job Description </label>
+			<textarea id="element_12" name="jobdescription" class="element textarea medium"></textarea> 
+            </p>
+             <p>
+                 <input type="submit" value="Submit" />
+            </p>
+        </form>
+        <a href="@Href("~/index")">Back to home</a>
+    </body>
+</html>
