@@ -9,7 +9,11 @@
       password = Request["password"];
       if(WebSecurity.Login(username,password,true))
         {
-          Response.Redirect("~/Home");
+            if(Roles.IsUserInRole(WebSecurity.CurrentUserName,"Student")){
+              Response.Redirect("Students/StudentHomePage.cshtml");
+          } else if(Roles.IsUserInRole(WebSecurity.CurrentUserName,"Admin")){
+              Response.Redirect("Admin/AdminHomePage.cshtml");
+          }
         }
       else
       {

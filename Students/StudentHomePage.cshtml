@@ -1,0 +1,17 @@
+﻿@{
+    int userid = WebSecurity.CurrentUserId;
+    var db = Database.Open("Login");
+    var status = db.Execute("Select InternshipStatus From internship inner join student on student.internshipid = internship.internshipid where student.userid = @0",userid);
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title></title>
+    </head>
+    <body>
+        application status: @status
+    </body>
+</html>

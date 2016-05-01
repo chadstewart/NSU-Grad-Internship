@@ -45,12 +45,13 @@
                   db.Execute("UPDATE internship SET internship.AgencyID = t2.AgencyID FROM agency t2 WHERE t2.agencyname = @0 AND internship.jobdescription = @1;",Request["agencyname"],Request["jobdescription"]);
                   db.Execute("UPDATE internship SET internship.AgencySupervisorID = t2.SupervisorID FROM supervisor t2 WHERE t2.supervisorname = @0 AND internship.jobdescription = @1;",Request["supervisorname"],Request["jobdescription"]);
                   db.Execute("commit;");
+                  Response.Redirect("index.cshtml");
                 } catch (Exception ex){
                     db.Execute("rollback;");
                     var deleteUser = db.Execute("Select UserID From users Where Email = @0",email);
-                    db.Execute("Delete From webpages_Membership Where UserID = @0",deleteUser);
                     db.Execute("Delete From users Where UserID = @0",deleteUser);
-                    errorMessage = String.Format("Unable to create new user.");
+                    db.Execute("Delete From webpages_Membership Where UserID = @0",deleteUser);
+                    errorMessage = String.Format("Unable to complete registration.");
                 }
                 db.Close();
             }

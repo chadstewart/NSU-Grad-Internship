@@ -1,6 +1,6 @@
 ﻿@{
     var db = Database.Open("Login");
-    var query = db.Query("Select FullName, student.NSUID, AgencyName, InternshipStatus from users inner join student on users.userid = student.userid inner join internship on student.internshipID = internship.internshipID inner join agency on internship.agencyid = agency.agencyid");
+    var query = db.Query("Select FullName, student.NSUID, AgencyName, InternshipStatus from users inner join student on users.userid = student.userid inner join internship on student.internshipID = internship.internshipID inner join agency on internship.agencyid = agency.agencyid where student.internshipID != 0");
 
     var grid = new WebGrid(query);
 }
