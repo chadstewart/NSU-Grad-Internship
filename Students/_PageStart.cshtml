@@ -1,12 +1,12 @@
 ﻿@{
-    Response.CacheControl = "no-cache";
+    Response.CacheControl = "public";
     
     if (!WebSecurity.IsAuthenticated) {
         Response.Redirect("~/index");
     } else if (!Roles.IsUserInRole(WebSecurity.CurrentUserName, 
       "Student"))
     {
-      Response.Redirect("~/Home");
+      Response.Redirect("~/Admin/AdminHomePage.cshtml");
     }
 }
 
@@ -15,7 +15,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title></title>
+        <title>Shark Internship Portal Student</title>
     </head>
     <body>
         

@@ -3,10 +3,9 @@
 
     if(!WebSecurity.IsAuthenticated) {
         Response.Redirect("~/index");
-    } else if (!Roles.IsUserInRole(WebSecurity.CurrentUserName,"Admin")
-            || !Roles.IsUserInRole(WebSecurity.CurrentUserName,"Dean"))
+    } else if (!Roles.IsUserInRole(WebSecurity.CurrentUserName,"Admin"))
     {
-      Response.Redirect("~/Home");
+      Response.Redirect("~/Students/StudentHomePage.cshtml");
     }
 }
 
@@ -15,7 +14,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title></title>
+        <title>Shark Internship Portal Admin</title>
     </head>
     <body>
         

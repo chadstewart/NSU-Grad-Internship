@@ -1,7 +1,12 @@
 ﻿@{
-    int userid = WebSecurity.CurrentUserId;
+    int userid = 28;
     var db = Database.Open("Login");
-    var status = db.Execute("Select InternshipStatus From internship inner join student on student.internshipid = internship.internshipid where student.userid = @0",userid);
+    var nsuid = db.Execute("Select nsuid from student where nsuid = @0",userid);
+    var status = db.Execute("Select InternshipStatus From internship where nsuid = @0",nsuid);
+
+    var query = db.Query("Select FullName, AgencyAddress, AgencyWebsite, AgencyPhoneNumber, InternshipStatus from users inner join student on users.userid = student.userid inner join internship on student.internshipid = internship.internshipid inner join agency on agency.agencyid = internship.agencyid where student.nsuid = @0",nsuid);
+
+    var grid = new WebGrid(query);
 }
 
 <!DOCTYPE html>
@@ -13,5 +18,6 @@
     </head>
     <body>
         application status: @status
+        @grid.GetHtml()
     </body>
 </html>
